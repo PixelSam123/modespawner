@@ -1,0 +1,40 @@
+{
+	"schema_version": 1,
+	"quilt_loader": {
+		"group": "com.pixelsam123",
+		"id": "modespawner",
+		"version": "${version}",
+		"metadata": {
+			"name": "Modespawner",
+			"description": "Modify the item Despawn timer",
+			"contributors": {
+				"PixelSam123": "Owner"
+			},
+			"contact": {
+				"homepage": "https://pixelsam123.github.io/",
+				"issues": "https://github.com/pixelsam123/modespawner/issues",
+				"sources": "https://github.com/pixelsam123/modespawner/"
+			},
+			"icon": "assets/example_mod/icon.png"
+		},
+		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"init": "com.pixelsam123.Modespawner"
+		},
+		"depends": [
+			{
+				"id": "quilt_loader",
+				"versions": ">=0.17.0-"
+			},
+			{
+				"id": "quilted_fabric_api",
+				"versions": ">=2.0.0-"
+			},
+			{
+				"id": "minecraft",
+				"versions": ">=1.19"
+			}
+		]
+	},
+	"mixin": "modespawner.mixins.json"
+}
