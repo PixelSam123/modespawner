@@ -1,5 +1,6 @@
 package com.pixelsam123.mixin;
 
+import com.pixelsam123.Modespawner;
 import net.minecraft.entity.ItemEntity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +31,7 @@ public class ItemEntityMixin {
 		)
 	)
 	public int changeDespawnTimeInTickMethod(int constant) {
-		return 100;
+		return Modespawner.despawnTime;
 	}
 
 	@ModifyConstant(
@@ -52,11 +53,11 @@ public class ItemEntityMixin {
 		)
 	)
 	public int changeDespawnTimeInCanMergeMethod(int constant) {
-		return 100;
+		return Modespawner.despawnTime;
 	}
 
 	@ModifyConstant(method = "setDespawnImmediately", constant = @Constant(intValue = 5999))
 	public int changeTimeInSetDespawnImmediatelyMethod(int constant) {
-		return 99;
+		return Modespawner.despawnTime - 1;
 	}
 }
