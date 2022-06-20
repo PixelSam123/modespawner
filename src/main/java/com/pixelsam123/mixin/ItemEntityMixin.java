@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 
 @Mixin(ItemEntity.class)
 public class ItemEntityMixin {
-	// donated by jsq (note to self: go to "View > Show Bytecode" for the reasoning)
+	// Thanks jsq (check "View > Show Bytecode")
 	@ModifyConstant(
 		method = "tick",
 		constant = @Constant(intValue = 6000),
@@ -33,8 +33,30 @@ public class ItemEntityMixin {
 		return 100;
 	}
 
-	@ModifyConstant(method = "canMerge()Z", constant = @Constant(intValue = 6000))
+	@ModifyConstant(
+		method = "canMerge()Z",
+		constant = @Constant(intValue = 6000),
+		slice = @Slice(
+			from = @At(
+				value = "FIELD",
+				target = "Lnet/minecraft/entity/ItemEntity;itemAge:I",
+				ordinal = 1,
+				opcode = Opcodes.GETFIELD,
+				shift = At.Shift.AFTER
+			),
+			to = @At(
+				value = "JUMP",
+				opcode = Opcodes.IF_ICMPGE,
+				shift = At.Shift.BEFORE
+			)
+		)
+	)
 	public int changeDespawnTimeInCanMergeMethod(int constant) {
 		return 100;
+	}
+
+	@ModifyConstant(method = "setDespawnImmediately", constant = @Constant(intValue = 5999))
+	public int changeTimeInSetDespawnImmediatelyMethod(int constant) {
+		return 99;
 	}
 }
