@@ -64,7 +64,7 @@ public class Modespawner implements ModInitializer {
 	private static int handleDespawnTimeCommand(CommandContext<ServerCommandSource> context) {
 		context
 			.getSource()
-			.sendFeedback(Text.literal("Item despawn time is " + DESPAWN_TIME + " ticks"), true);
+			.sendFeedback(Text.literal("Item despawn time is " + DESPAWN_TIME.getRealValue() + " ticks"), true);
 		return 1;
 	}
 
@@ -82,7 +82,7 @@ public class Modespawner implements ModInitializer {
 		context
 			.getSource()
 			.sendFeedback(
-				Text.literal("Set item despawn time to " + DESPAWN_TIME + " ticks"),
+				Text.literal("Set item despawn time to " + DESPAWN_TIME.getRealValue() + " ticks"),
 				true
 			);
 		return 1;
