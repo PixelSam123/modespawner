@@ -20,8 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.server.command.CommandManager.*;
 
 public class Modespawner implements ModInitializer {
 	public static final String MOD_ID = "modespawner";
@@ -54,17 +53,22 @@ public class Modespawner implements ModInitializer {
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> {
 			dispatcher.register(literal("despawntime").executes(Modespawner::handleDespawnTimeCommand));
-			dispatcher.register(literal("despawntime").then(literal("set").then(argument(
-				"ticks",
-				IntegerArgumentType.integer()
-			).executes(Modespawner::handleDespawnTimeSetCommand))));
+			dispatcher.register(literal("despawntime").then(literal("set")
+				.requires(source -> source.hasPermissionLevel(OWNER_PERMISSION_LEVEL))
+				.then(argument(
+					"ticks",
+					IntegerArgumentType.integer()
+				).executes(Modespawner::handleDespawnTimeSetCommand))));
 		});
 	}
 
 	private static int handleDespawnTimeCommand(CommandContext<ServerCommandSource> context) {
 		context
 			.getSource()
-			.sendFeedback(Text.literal("Item despawn time is " + DESPAWN_TIME.getRealValue() + " ticks"), true);
+			.sendFeedback(
+				Text.literal("Item despawn time is " + DESPAWN_TIME.getRealValue() + " ticks"),
+				true
+			);
 		return 1;
 	}
 
