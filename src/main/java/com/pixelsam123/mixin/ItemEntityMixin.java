@@ -31,7 +31,7 @@ public class ItemEntityMixin {
 		)
 	)
 	public int changeDespawnTimeInTickMethod(int constant) {
-		return Modespawner.despawnTime;
+		return Modespawner.DESPAWN_TIME.getRealValue();
 	}
 
 	@ModifyConstant(
@@ -53,11 +53,11 @@ public class ItemEntityMixin {
 		)
 	)
 	public int changeDespawnTimeInCanMergeMethod(int constant) {
-		return Modespawner.despawnTime;
+		return Modespawner.DESPAWN_TIME.getRealValue();
 	}
 
 	@ModifyConstant(method = "setDespawnImmediately", constant = @Constant(intValue = 5999))
 	public int changeTimeInSetDespawnImmediatelyMethod(int constant) {
-		return Modespawner.despawnTime - 1;
+		return Modespawner.DESPAWN_TIME.getRealValue() - 1;
 	}
 }

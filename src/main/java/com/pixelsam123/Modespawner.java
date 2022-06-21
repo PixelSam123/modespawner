@@ -4,11 +4,21 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import org.quiltmc.config.api.Config;
+import org.quiltmc.config.api.ConfigEnvironment;
+import org.quiltmc.config.api.Constraint;
+import org.quiltmc.config.api.values.TrackedValue;
 import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.impl.config.Json5Serializer;
+import org.quiltmc.loader.impl.config.NightConfigSerializer;
+import org.quiltmc.loader.impl.lib.electronwill.nightconfig.toml.TomlParser;
+import org.quiltmc.loader.impl.lib.electronwill.nightconfig.toml.TomlWriter;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.file.Path;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -17,7 +27,26 @@ public class Modespawner implements ModInitializer {
 	public static final String MOD_ID = "modespawner";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static int despawnTime = 6000;
+	public static final TrackedValue<Integer> DESPAWN_TIME = TrackedValue.create(
+		6000,
+		"despawnTime",
+		creator -> {
+			creator.constraint(Constraint.range(1, Integer.MAX_VALUE));
+		}
+	);
+
+	private static final Config config = Config.create(
+		new ConfigEnvironment(
+			Path.of("config"),
+			new NightConfigSerializer<>("toml", new TomlParser(), new TomlWriter()),
+			Json5Serializer.INSTANCE
+		),
+		MOD_ID,
+		"mainConfig",
+		builder -> {
+			builder.field(DESPAWN_TIME);
+		}
+	);
 
 	@Override
 	public void onInitialize(ModContainer mod) {
@@ -35,7 +64,7 @@ public class Modespawner implements ModInitializer {
 	private static int handleDespawnTimeCommand(CommandContext<ServerCommandSource> context) {
 		context
 			.getSource()
-			.sendFeedback(Text.literal("Item despawn time is " + despawnTime + " ticks"), true);
+			.sendFeedback(Text.literal("Item despawn time is " + DESPAWN_TIME + " ticks"), true);
 		return 1;
 	}
 
@@ -44,14 +73,18 @@ public class Modespawner implements ModInitializer {
 		if (ticksArg < 1) {
 			context
 				.getSource()
-				.sendError(Text.literal("Don't set this to under 1 tick (because I don't know what will happen)"));
+				.sendError(Text.literal(
+					"Don't set this to under 1 tick (because I don't know what will happen)"));
 			return -1;
 		}
 
-		despawnTime = ticksArg;
+		DESPAWN_TIME.setValue(ticksArg, true);
 		context
 			.getSource()
-			.sendFeedback(Text.literal("Set item despawn time to " + despawnTime + " ticks"), true);
+			.sendFeedback(
+				Text.literal("Set item despawn time to " + DESPAWN_TIME + " ticks"),
+				true
+			);
 		return 1;
 	}
 }
