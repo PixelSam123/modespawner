@@ -26,7 +26,7 @@ public class Modespawner implements ModInitializer {
 	public static final String MOD_ID = "modespawner";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static final TrackedValue<Integer> DESPAWN_TIME = TrackedValue.create(
+	public static final TrackedValue<Integer> GLOBAL_DESPAWN_TIME = TrackedValue.create(
 		6000,
 		"despawnTime",
 		creator -> {
@@ -34,16 +34,16 @@ public class Modespawner implements ModInitializer {
 		}
 	);
 
-	private static final Config config = Config.create(
+	private static final Config globalConfig = Config.create(
 		new ConfigEnvironment(
 			Path.of("config"),
 			new NightConfigSerializer<>("toml", new TomlParser(), new TomlWriter()),
 			Json5Serializer.INSTANCE
 		),
 		MOD_ID,
-		"mainConfig",
+		"globalConfig",
 		builder -> {
-			builder.field(DESPAWN_TIME);
+			builder.field(GLOBAL_DESPAWN_TIME);
 		}
 	);
 
@@ -66,7 +66,7 @@ public class Modespawner implements ModInitializer {
 		context
 			.getSource()
 			.sendFeedback(
-				Text.literal("Item despawn time is " + DESPAWN_TIME.getRealValue() + " ticks"),
+				Text.literal("Item despawn time is " + GLOBAL_DESPAWN_TIME.getRealValue() + " ticks"),
 				true
 			);
 		return 1;
@@ -82,11 +82,11 @@ public class Modespawner implements ModInitializer {
 			return -1;
 		}
 
-		DESPAWN_TIME.setValue(ticksArg, true);
+		GLOBAL_DESPAWN_TIME.setValue(ticksArg, true);
 		context
 			.getSource()
 			.sendFeedback(
-				Text.literal("Set item despawn time to " + DESPAWN_TIME.getRealValue() + " ticks"),
+				Text.literal("Set item despawn time to " + GLOBAL_DESPAWN_TIME.getRealValue() + " ticks"),
 				true
 			);
 		return 1;
