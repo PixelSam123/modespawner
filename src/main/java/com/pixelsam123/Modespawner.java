@@ -24,7 +24,7 @@ import static net.minecraft.server.command.CommandManager.*;
 
 public class Modespawner implements ModInitializer {
 	public static final String MOD_ID = "modespawner";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final Logger LOGGER = LoggerFactory.getLogger(Modespawner.class);
 
 	public static final TrackedValue<Integer> GLOBAL_DESPAWN_TIME = TrackedValue.create(
 		6000,
@@ -49,7 +49,7 @@ public class Modespawner implements ModInitializer {
 
 	@Override
 	public void onInitialize(ModContainer mod) {
-		LOGGER.info("Hello Quilt world from {}!", mod.metadata().name());
+		LOGGER.info("Initializing");
 
 		CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> {
 			dispatcher.register(literal("despawntime").executes(Modespawner::handleDespawnTimeCommand));
