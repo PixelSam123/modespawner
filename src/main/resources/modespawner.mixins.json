@@ -3,10 +3,10 @@
 	"minVersion": "0.8",
 	"package": "com.pixelsam123.mixin",
 	"compatibilityLevel": "JAVA_17",
-	"mixins": [],
-	"client": [
+	"mixins": [
       "ItemEntityMixin"
-	],
+    ],
+	"client": [],
 	"injectors": {
 		"defaultRequire": 1
 	}
