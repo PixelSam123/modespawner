@@ -15,7 +15,7 @@
 				"issues": "https://github.com/pixelsam123/modespawner/issues",
 				"sources": "https://github.com/pixelsam123/modespawner/"
 			},
-			"icon": "assets/example_mod/icon.png"
+			"icon": "assets/modespawner/icon.png"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
