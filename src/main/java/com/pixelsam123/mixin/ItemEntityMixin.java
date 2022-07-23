@@ -1,16 +1,23 @@
 package com.pixelsam123.mixin;
 
-import com.pixelsam123.Modespawner;
+import com.pixelsam123.ItemAgeSettable;
 import net.minecraft.entity.ItemEntity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Slice;
 
+import static com.pixelsam123.MixinFunctions.getGlobalDespawnImmediatelyTimeFromConfig;
+import static com.pixelsam123.MixinFunctions.getGlobalDespawnTimeFromConfig;
+
 @Mixin(ItemEntity.class)
-public class ItemEntityMixin {
+public abstract class ItemEntityMixin implements ItemAgeSettable {
+	@Shadow
+	private int itemAge;
+
 	// Thanks jsq (check "View > Show Bytecode")
 	@ModifyConstant(
 		method = "tick",
@@ -31,7 +38,7 @@ public class ItemEntityMixin {
 		)
 	)
 	public int changeDespawnTimeInTickMethod(int constant) {
-		return Modespawner.GLOBAL_DESPAWN_TIME.getRealValue();
+		return getGlobalDespawnTimeFromConfig();
 	}
 
 	@ModifyConstant(
@@ -53,11 +60,16 @@ public class ItemEntityMixin {
 		)
 	)
 	public int changeDespawnTimeInCanMergeMethod(int constant) {
-		return Modespawner.GLOBAL_DESPAWN_TIME.getRealValue();
+		return getGlobalDespawnTimeFromConfig();
 	}
 
 	@ModifyConstant(method = "setDespawnImmediately", constant = @Constant(intValue = 5999))
 	public int changeTimeInSetDespawnImmediatelyMethod(int constant) {
-		return Modespawner.GLOBAL_DESPAWN_TIME.getRealValue() - 1;
+		return getGlobalDespawnImmediatelyTimeFromConfig();
+	}
+
+	@Override
+	public void setItemAge(int itemAge) {
+		this.itemAge = itemAge;
 	}
 }

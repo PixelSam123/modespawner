@@ -29,9 +29,12 @@ public class Modespawner implements ModInitializer {
 	public static final TrackedValue<Integer> GLOBAL_DESPAWN_TIME = TrackedValue.create(
 		6000,
 		"despawnTime",
-		creator -> {
-			creator.constraint(Constraint.range(1, Integer.MAX_VALUE));
-		}
+		creator -> creator.constraint(Constraint.range(1, Integer.MAX_VALUE))
+	);
+	public static final TrackedValue<Integer> GLOBAL_INITIAL_DEATH_ITEM_AGE = TrackedValue.create(
+		0,
+		"initialDeathItemAge",
+		creator -> creator.constraint(Constraint.range(-32767, Integer.MAX_VALUE))
 	);
 
 	private static final Config globalConfig = Config.create(
@@ -44,6 +47,7 @@ public class Modespawner implements ModInitializer {
 		"globalConfig",
 		builder -> {
 			builder.field(GLOBAL_DESPAWN_TIME);
+			builder.field(GLOBAL_INITIAL_DEATH_ITEM_AGE);
 		}
 	);
 
@@ -59,6 +63,16 @@ public class Modespawner implements ModInitializer {
 					"ticks",
 					IntegerArgumentType.integer()
 				).executes(Modespawner::handleDespawnTimeSetCommand))));
+
+			dispatcher.register(literal("despawntime").then(literal("initialdeath").executes(
+				Modespawner::handleDespawnTimeInitialDeathCommand)));
+			dispatcher.register(literal("despawntime").then(literal("initialdeath").then(literal(
+				"set")
+				.requires(source -> source.hasPermissionLevel(OWNER_PERMISSION_LEVEL))
+				.then(argument(
+					"ticks",
+					IntegerArgumentType.integer()
+				).executes(Modespawner::handleDespawnTimeInitialDeathSetCommand)))));
 		});
 	}
 
@@ -87,6 +101,43 @@ public class Modespawner implements ModInitializer {
 			.getSource()
 			.sendFeedback(
 				Text.literal("Set item despawn time to " + GLOBAL_DESPAWN_TIME.getRealValue() + " ticks"),
+				true
+			);
+		return 1;
+	}
+
+	private static int handleDespawnTimeInitialDeathCommand(CommandContext<ServerCommandSource> context) {
+		context
+			.getSource()
+			.sendFeedback(
+				Text.literal("Initial death item age is " + GLOBAL_INITIAL_DEATH_ITEM_AGE.getRealValue() + " ticks"),
+				true
+			);
+		return 1;
+	}
+
+	private static int handleDespawnTimeInitialDeathSetCommand(CommandContext<ServerCommandSource> context) {
+		final int ticksArg = context.getArgument("ticks", int.class);
+		if (ticksArg < -32767) {
+			context
+				.getSource()
+				.sendError(Text.literal(
+					"Minecraft sets items to never despawn if itemAge is -32768 ticks. So don't pick that or below"));
+			return -1;
+		}
+		if (ticksArg >= GLOBAL_DESPAWN_TIME.getRealValue()) {
+			context
+				.getSource()
+				.sendError(Text.literal(
+					"Please set this below the universal item despawn time!"));
+			return -1;
+		}
+
+		GLOBAL_INITIAL_DEATH_ITEM_AGE.setValue(ticksArg, true);
+		context
+			.getSource()
+			.sendFeedback(
+				Text.literal("Set initial death item age to " + GLOBAL_INITIAL_DEATH_ITEM_AGE.getRealValue() + " ticks"),
 				true
 			);
 		return 1;
